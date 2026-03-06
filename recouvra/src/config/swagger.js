@@ -66,6 +66,35 @@ const options = {
           properties: {
             message: { type: 'string', example: 'Erreur serveur' }
           }
+        },
+        Client: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: '64b1f2c3d4e5f6a7b8c9d0e2' },
+            raisonSociale: { type: 'string', example: 'Société ABC' },
+            email: { type: 'string', format: 'email', example: 'contact@abc.com' },
+            telephone: { type: 'string', example: '+21612345678' },
+            adresse: { type: 'string', example: '12 Rue de la Paix, Tunis' }
+          }
+        },
+        ClientInput: {
+          type: 'object',
+          required: ['raisonSociale', 'email', 'telephone', 'adresse'],
+          properties: {
+            raisonSociale: { type: 'string', minLength: 2, example: 'Société ABC' },
+            email: { type: 'string', format: 'email', example: 'contact@abc.com' },
+            telephone: { type: 'string', example: '+21612345678' },
+            adresse: { type: 'string', example: '12 Rue de la Paix, Tunis' }
+          }
+        },
+        ClientUpdate: {
+          type: 'object',
+          properties: {
+            raisonSociale: { type: 'string', minLength: 2, example: 'Société XYZ' },
+            email: { type: 'string', format: 'email', example: 'contact@xyz.com' },
+            telephone: { type: 'string', example: '+21698765432' },
+            adresse: { type: 'string', example: '5 Avenue Habib Bourguiba, Sfax' }
+          }
         }
       }
     },
@@ -185,6 +214,128 @@ const options = {
             400: { description: 'Données invalides ou email déjà utilisé', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
             401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
             403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/clients': {
+        get: {
+          tags: ['Clients'],
+          summary: 'Récupérer tous les clients',
+          description: 'Retourne la liste de tous les clients. Requiert le rôle MANAGER ou AGENT.',
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: {
+              description: 'Liste des clients',
+              content: {
+                'application/json': {
+                  schema: { type: 'array', items: { $ref: '#/components/schemas/Client' } }
+                }
+              }
+            },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        },
+        post: {
+          tags: ['Clients'],
+          summary: 'Créer un client',
+          description: 'Crée un nouveau client. Requiert le rôle MANAGER ou AGENT.',
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ClientInput' }
+              }
+            }
+          },
+          responses: {
+            201: {
+              description: 'Client créé avec succès',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string', example: 'Client créé avec succès' },
+                      client: { $ref: '#/components/schemas/Client' }
+                    }
+                  }
+                }
+              }
+            },
+            400: { description: 'Données invalides ou email déjà utilisé', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/clients/{id}': {
+        get: {
+          tags: ['Clients'],
+          summary: 'Récupérer un client par ID',
+          description: 'Retourne un client spécifique. Requiert le rôle MANAGER ou AGENT.',
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' }, description: 'ID MongoDB du client' }
+          ],
+          responses: {
+            200: { description: 'Client trouvé', content: { 'application/json': { schema: { $ref: '#/components/schemas/Client' } } } },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            404: { description: 'Client non trouvé', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        },
+        put: {
+          tags: ['Clients'],
+          summary: 'Mettre à jour un client',
+          description: 'Met à jour les informations d\'un client. Requiert le rôle MANAGER ou AGENT.',
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' }, description: 'ID MongoDB du client' }
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/ClientUpdate' }
+              }
+            }
+          },
+          responses: {
+            200: {
+              description: 'Client mis à jour',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string', example: 'Client mis à jour avec succès' },
+                      client: { $ref: '#/components/schemas/Client' }
+                    }
+                  }
+                }
+              }
+            },
+            400: { description: 'Données invalides', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            404: { description: 'Client non trouvé', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        },
+        delete: {
+          tags: ['Clients'],
+          summary: 'Supprimer un client',
+          description: 'Supprime un client par son ID. Requiert le rôle MANAGER ou AGENT.',
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' }, description: 'ID MongoDB du client' }
+          ],
+          responses: {
+            200: { description: 'Client supprimé', content: { 'application/json': { schema: { type: 'object', properties: { message: { type: 'string', example: 'Client supprimé avec succès' } } } } } },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            404: { description: 'Client non trouvé', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
           }
         }
       },
