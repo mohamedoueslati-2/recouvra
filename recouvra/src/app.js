@@ -4,6 +4,7 @@ const connectDB = require('./config/db');
 
 const authRoutes = require('./routes/authRoutes');
 const utilisateurRoutes = require('./routes/utilisateurRoutes');
+const clientRoutes = require('./routes/clientRoutes');
 
 const setupSwagger = require('./config/swagger');
 
@@ -18,6 +19,8 @@ app.use(express.json());
 // Routes de l'API
 app.use('/api/auth', authRoutes);
 app.use('/api/utilisateurs', utilisateurRoutes);
+app.use('/api/clients', clientRoutes);
+
 
 // Swagger
 setupSwagger(app);
