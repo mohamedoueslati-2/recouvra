@@ -127,6 +127,27 @@ const options = {
             dateEcheance: { type: 'string', format: 'date', example: '2024-03-15' },
             statut: { type: 'string', enum: ['EN_ATTENTE', 'EN_RETARD', 'PAYEE_PARTIELLEMENT', 'PAYEE'], example: 'EN_RETARD' }
           }
+        },
+        Paiement: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: '64b1f2c3d4e5f6a7b8c9d0e4' },
+            facture: { type: 'string', example: '64b1f2c3d4e5f6a7b8c9d0e3', description: 'ID MongoDB de la facture' },
+            montant: { type: 'number', example: 500.00 },
+            datePaiement: { type: 'string', format: 'date-time', example: '2024-01-20T10:30:00Z' },
+            reference: { type: 'string', example: 'VIR-2024-001' },
+            methode: { type: 'string', enum: ['VIREMENT', 'CHEQUE', 'ESPECES'], example: 'VIREMENT' }
+          }
+        },
+        PaiementInput: {
+          type: 'object',
+          required: ['facture', 'montant', 'reference', 'methode'],
+          properties: {
+            facture: { type: 'string', example: '64b1f2c3d4e5f6a7b8c9d0e3', description: 'ID MongoDB de la facture' },
+            montant: { type: 'number', minimum: 0.01, example: 500.00 },
+            reference: { type: 'string', example: 'VIR-2024-001' },
+            methode: { type: 'string', enum: ['VIREMENT', 'CHEQUE', 'ESPECES'], example: 'VIREMENT' }
+          }
         }
       }
     },
@@ -564,6 +585,72 @@ const options = {
             401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
             403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
             404: { description: 'Facture non trouvée', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/paiements': {
+        get: {
+          tags: ['Paiements'],
+          summary: 'Récupérer tous les paiements',
+          description: 'Retourne la liste de tous les paiements avec les informations de facture. Requiert le rôle MANAGER ou AGENT.',
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: {
+              description: 'Liste des paiements',
+              content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Paiement' } } } }
+            },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        },
+        post: {
+          tags: ['Paiements'],
+          summary: 'Enregistrer un paiement',
+          description: 'Enregistre un nouveau paiement et met à jour le montant restant de la facture. Requiert le rôle MANAGER ou AGENT.',
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/PaiementInput' } } }
+          },
+          responses: {
+            201: {
+              description: 'Paiement enregistré avec succès',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string', example: 'Paiement enregistré avec succès' },
+                      paiement: { $ref: '#/components/schemas/Paiement' },
+                      facture: { $ref: '#/components/schemas/Facture' }
+                    }
+                  }
+                }
+              }
+            },
+            400: { description: 'Montant invalide ou facture déjà payée', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            404: { description: 'Facture introuvable', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/paiements/facture/{factureId}': {
+        get: {
+          tags: ['Paiements'],
+          summary: 'Récupérer les paiements d\'une facture',
+          description: 'Retourne tous les paiements associés à une facture spécifique.',
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'factureId', in: 'path', required: true, schema: { type: 'string' }, description: 'ID MongoDB de la facture' }
+          ],
+          responses: {
+            200: {
+              description: 'Paiements de la facture',
+              content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Paiement' } } } }
+            },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
           }
         }
       }
