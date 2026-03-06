@@ -95,6 +95,38 @@ const options = {
             telephone: { type: 'string', example: '+21698765432' },
             adresse: { type: 'string', example: '5 Avenue Habib Bourguiba, Sfax' }
           }
+        },
+        Facture: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: '64b1f2c3d4e5f6a7b8c9d0e3' },
+            client: { type: 'string', example: '64b1f2c3d4e5f6a7b8c9d0e2', description: 'ID MongoDB du client' },
+            numeroFacture: { type: 'string', example: 'FAC-2024-001' },
+            montantTotal: { type: 'number', example: 1500.00 },
+            montantRestant: { type: 'number', example: 750.00 },
+            dateEmission: { type: 'string', format: 'date', example: '2024-01-15' },
+            dateEcheance: { type: 'string', format: 'date', example: '2024-02-15' },
+            statut: { type: 'string', enum: ['EN_ATTENTE', 'EN_RETARD', 'PAYEE_PARTIELLEMENT', 'PAYEE'], example: 'EN_ATTENTE' }
+          }
+        },
+        FactureInput: {
+          type: 'object',
+          required: ['client', 'numeroFacture', 'montantTotal', 'dateEmission', 'dateEcheance'],
+          properties: {
+            client: { type: 'string', example: '64b1f2c3d4e5f6a7b8c9d0e2', description: 'ID MongoDB du client' },
+            numeroFacture: { type: 'string', example: 'FAC-2024-001' },
+            montantTotal: { type: 'number', minimum: 0, example: 1500.00 },
+            dateEmission: { type: 'string', format: 'date', example: '2024-01-15' },
+            dateEcheance: { type: 'string', format: 'date', example: '2024-02-15' },
+            statut: { type: 'string', enum: ['EN_ATTENTE', 'EN_RETARD', 'PAYEE_PARTIELLEMENT', 'PAYEE'], example: 'EN_ATTENTE' }
+          }
+        },
+        FactureUpdate: {
+          type: 'object',
+          properties: {
+            dateEcheance: { type: 'string', format: 'date', example: '2024-03-15' },
+            statut: { type: 'string', enum: ['EN_ATTENTE', 'EN_RETARD', 'PAYEE_PARTIELLEMENT', 'PAYEE'], example: 'EN_RETARD' }
+          }
         }
       }
     },
@@ -405,6 +437,133 @@ const options = {
             401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
             403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
             404: { description: 'Utilisateur non trouvé', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/factures': {
+        get: {
+          tags: ['Factures'],
+          summary: 'Récupérer toutes les factures',
+          description: 'Retourne la liste de toutes les factures avec les infos client. Requiert le rôle MANAGER ou AGENT.',
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: {
+              description: 'Liste des factures',
+              content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Facture' } } } }
+            },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        },
+        post: {
+          tags: ['Factures'],
+          summary: 'Créer une facture',
+          description: 'Crée une nouvelle facture liée à un client. Requiert le rôle MANAGER ou AGENT.',
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/FactureInput' } } }
+          },
+          responses: {
+            201: {
+              description: 'Facture créée avec succès',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string', example: 'Facture créée avec succès' },
+                      facture: { $ref: '#/components/schemas/Facture' }
+                    }
+                  }
+                }
+              }
+            },
+            400: { description: 'Données invalides', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            404: { description: 'Client introuvable', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/factures/client/{clientId}': {
+        get: {
+          tags: ['Factures'],
+          summary: 'Récupérer les factures d\'un client',
+          description: 'Retourne toutes les factures associées à un client spécifique.',
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'clientId', in: 'path', required: true, schema: { type: 'string' }, description: 'ID MongoDB du client' }
+          ],
+          responses: {
+            200: { description: 'Factures du client', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Facture' } } } } },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        }
+      },
+      '/api/factures/{id}': {
+        get: {
+          tags: ['Factures'],
+          summary: 'Récupérer une facture par ID',
+          description: 'Retourne une facture avec les détails du client.',
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' }, description: 'ID MongoDB de la facture' }
+          ],
+          responses: {
+            200: { description: 'Facture trouvée', content: { 'application/json': { schema: { $ref: '#/components/schemas/Facture' } } } },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            404: { description: 'Facture non trouvée', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        },
+        put: {
+          tags: ['Factures'],
+          summary: 'Mettre à jour une facture',
+          description: 'Met à jour la date d\'échéance ou le statut d\'une facture.',
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' }, description: 'ID MongoDB de la facture' }
+          ],
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/FactureUpdate' } } }
+          },
+          responses: {
+            200: {
+              description: 'Facture mise à jour',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string', example: 'Facture mise à jour avec succès' },
+                      facture: { $ref: '#/components/schemas/Facture' }
+                    }
+                  }
+                }
+              }
+            },
+            400: { description: 'Données invalides', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            404: { description: 'Facture non trouvée', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
+          }
+        },
+        delete: {
+          tags: ['Factures'],
+          summary: 'Supprimer une facture',
+          description: 'Supprime une facture par son ID.',
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' }, description: 'ID MongoDB de la facture' }
+          ],
+          responses: {
+            200: { description: 'Facture supprimée', content: { 'application/json': { schema: { type: 'object', properties: { message: { type: 'string', example: 'Facture supprimée avec succès' } } } } } },
+            401: { description: 'Non authentifié', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            403: { description: 'Accès interdit', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+            404: { description: 'Facture non trouvée', content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } }
           }
         }
       }
