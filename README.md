@@ -71,7 +71,20 @@ recouvra/
     ├── app.js                  # Point d'entrée Express
     ├── config/
     │   ├── db.js               # Connexion MongoDB
-    │   └── swagger.js          # Configuration Swagger/OpenAPI
+    │   └── swagger.js          # Configuration Swagger (charge les YAML)
+    ├── docs/
+    │   ├── schemas/            # Schémas OpenAPI (YAML)
+    │   │   ├── auth.yaml
+    │   │   ├── utilisateur.yaml
+    │   │   ├── client.yaml
+    │   │   ├── facture.yaml
+    │   │   └── paiement.yaml
+    │   └── paths/              # Routes OpenAPI (YAML)
+    │       ├── auth.yaml
+    │       ├── utilisateurs.yaml
+    │       ├── clients.yaml
+    │       ├── factures.yaml
+    │       └── paiements.yaml
     ├── controllers/            # Logique des routes (req/res)
     │   ├── authController.js
     │   ├── utilisateurController.js
@@ -105,20 +118,29 @@ recouvra/
 
 ## Routes principales
 
-| Méthode | Route                              | Rôle requis         | Description                        |
-|---------|------------------------------------|---------------------|------------------------------------|
-| POST    | `/api/auth/connexion`              | Public              | Connexion, retourne un JWT         |
-| GET     | `/api/auth/session`                | Authentifié         | Vérifie la session                 |
-| GET     | `/api/utilisateurs`                | ADMIN               | Liste les utilisateurs             |
-| POST    | `/api/utilisateurs`                | ADMIN               | Crée un utilisateur                |
-| GET     | `/api/clients`                     | MANAGER / AGENT     | Liste les clients                  |
-| POST    | `/api/clients`                     | MANAGER / AGENT     | Crée un client                     |
-| GET     | `/api/factures`                    | MANAGER / AGENT     | Liste les factures                 |
-| POST    | `/api/factures`                    | MANAGER / AGENT     | Crée une facture                   |
-| GET     | `/api/factures/client/:clientId`   | MANAGER / AGENT     | Factures d'un client               |
-| GET     | `/api/paiements`                   | MANAGER / AGENT     | Liste les paiements                |
-| POST    | `/api/paiements`                   | MANAGER / AGENT     | Enregistre un paiement             |
-| GET     | `/api/paiements/facture/:id`       | MANAGER / AGENT     | Paiements d'une facture            |
+| Méthode | Route                                    | Rôle requis         | Description                        |
+|---------|------------------------------------------|---------------------|------------------------------------|
+| POST    | `/api/auth/connexion`                    | Public              | Connexion, retourne un JWT         |
+| GET     | `/api/auth/session`                      | Authentifié         | Vérifie la session                 |
+| GET     | `/api/utilisateurs`                      | ADMIN               | Liste les utilisateurs             |
+| POST    | `/api/utilisateurs`                      | ADMIN               | Crée un utilisateur                |
+| GET     | `/api/utilisateurs/:id`                  | ADMIN               | Obtenir un utilisateur             |
+| PUT     | `/api/utilisateurs/:id`                  | ADMIN               | Mettre à jour un utilisateur       |
+| DELETE  | `/api/utilisateurs/:id`                  | ADMIN               | Supprimer un utilisateur           |
+| GET     | `/api/clients`                           | MANAGER / AGENT     | Liste les clients                  |
+| POST    | `/api/clients`                           | MANAGER / AGENT     | Crée un client                     |
+| GET     | `/api/clients/:id`                       | MANAGER / AGENT     | Obtenir un client                  |
+| PUT     | `/api/clients/:id`                       | MANAGER / AGENT     | Mettre à jour un client            |
+| DELETE  | `/api/clients/:id`                       | MANAGER / AGENT     | Supprimer un client                |
+| GET     | `/api/factures`                          | MANAGER / AGENT     | Liste les factures                 |
+| POST    | `/api/factures`                          | MANAGER / AGENT     | Crée une facture                   |
+| GET     | `/api/factures/client/:clientId`         | MANAGER / AGENT     | Factures d'un client               |
+| GET     | `/api/factures/:id`                      | MANAGER / AGENT     | Obtenir une facture                |
+| PUT     | `/api/factures/:id`                      | MANAGER / AGENT     | Mettre à jour une facture          |
+| DELETE  | `/api/factures/:id`                      | MANAGER / AGENT     | Supprimer une facture              |
+| GET     | `/api/paiements`                         | MANAGER / AGENT     | Liste les paiements                |
+| POST    | `/api/paiements`                         | MANAGER / AGENT     | Enregistre un paiement             |
+| GET     | `/api/paiements/facture/:factureId`      | MANAGER / AGENT     | Paiements d'une facture            |
 
 ---
 
