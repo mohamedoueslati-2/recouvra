@@ -1,0 +1,19 @@
+components:
+  schemas:
+    ConnexionInput:
+      type: object
+      required: [email, motDePasse]
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@recouvra.com
+        motDePasse:
+          type: string
+          example: admin123!
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Erreur serveur

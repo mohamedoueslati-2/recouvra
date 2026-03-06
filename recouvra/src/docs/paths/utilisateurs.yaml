@@ -1,0 +1,93 @@
+paths:
+  /api/utilisateurs:
+    get:
+      tags: [Utilisateurs]
+      summary: Lister tous les utilisateurs
+      description: Requiert le rôle ADMIN.
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Liste des utilisateurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Utilisateur' }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+    post:
+      tags: [Utilisateurs]
+      summary: Créer un utilisateur
+      description: Requiert le rôle ADMIN.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UtilisateurInput' }
+      responses:
+        201:
+          description: Utilisateur créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  utilisateur: { $ref: '#/components/schemas/Utilisateur' }
+        400: { description: Données invalides ou email déjà utilisé }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+
+  /api/utilisateurs/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+        description: ID MongoDB de l'utilisateur
+    get:
+      tags: [Utilisateurs]
+      summary: Obtenir un utilisateur par ID
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Utilisateur trouvé
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Utilisateur' }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+        404: { description: Utilisateur non trouvé }
+    put:
+      tags: [Utilisateurs]
+      summary: Mettre à jour un utilisateur
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UtilisateurUpdate' }
+      responses:
+        200:
+          description: Utilisateur mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  utilisateur: { $ref: '#/components/schemas/Utilisateur' }
+        400: { description: Données invalides }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+        404: { description: Utilisateur non trouvé }
+    delete:
+      tags: [Utilisateurs]
+      summary: Supprimer un utilisateur
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Utilisateur supprimé }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+        404: { description: Utilisateur non trouvé }

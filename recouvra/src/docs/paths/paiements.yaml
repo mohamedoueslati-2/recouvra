@@ -1,0 +1,64 @@
+paths:
+  /api/paiements:
+    get:
+      tags: [Paiements]
+      summary: Récupérer tous les paiements
+      description: Retourne les paiements avec les infos facture. Requiert le rôle MANAGER ou AGENT.
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Liste des paiements
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Paiement' }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+    post:
+      tags: [Paiements]
+      summary: Enregistrer un paiement
+      description: Enregistre un paiement et met à jour le montant restant de la facture. Requiert le rôle MANAGER ou AGENT.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PaiementInput' }
+      responses:
+        201:
+          description: Paiement enregistré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  paiement: { $ref: '#/components/schemas/Paiement' }
+                  facture: { $ref: '#/components/schemas/Facture' }
+        400: { description: Montant invalide ou facture déjà payée }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+        404: { description: Facture introuvable }
+
+  /api/paiements/facture/{factureId}:
+    get:
+      tags: [Paiements]
+      summary: Paiements d'une facture
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: factureId
+          in: path
+          required: true
+          schema: { type: string }
+          description: ID MongoDB de la facture
+      responses:
+        200:
+          description: Liste des paiements de la facture
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Paiement' }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }

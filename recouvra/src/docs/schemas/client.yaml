@@ -1,0 +1,55 @@
+components:
+  schemas:
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 64b1f2c3d4e5f6a7b8c9d0e2
+        raisonSociale:
+          type: string
+          example: Société ABC
+        email:
+          type: string
+          format: email
+          example: contact@abc.com
+        telephone:
+          type: string
+          example: "+21612345678"
+        adresse:
+          type: string
+          example: 12 Rue de la Paix, Tunis
+    ClientInput:
+      type: object
+      required: [raisonSociale, email, telephone, adresse]
+      properties:
+        raisonSociale:
+          type: string
+          minLength: 2
+          example: Société ABC
+        email:
+          type: string
+          format: email
+          example: contact@abc.com
+        telephone:
+          type: string
+          example: "+21612345678"
+        adresse:
+          type: string
+          example: 12 Rue de la Paix, Tunis
+    ClientUpdate:
+      type: object
+      properties:
+        raisonSociale:
+          type: string
+          example: Société XYZ
+        email:
+          type: string
+          format: email
+          example: contact@xyz.com
+        telephone:
+          type: string
+          example: "+21698765432"
+        adresse:
+          type: string
+          example: 5 Avenue Habib Bourguiba, Sfax

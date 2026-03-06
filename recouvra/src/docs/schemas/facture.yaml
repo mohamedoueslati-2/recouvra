@@ -1,0 +1,70 @@
+components:
+  schemas:
+    Facture:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 64b1f2c3d4e5f6a7b8c9d0e3
+        client:
+          type: string
+          description: ID MongoDB du client
+          example: 64b1f2c3d4e5f6a7b8c9d0e2
+        numeroFacture:
+          type: string
+          example: FAC-2024-001
+        montantTotal:
+          type: number
+          example: 1500.00
+        montantRestant:
+          type: number
+          example: 750.00
+        dateEmission:
+          type: string
+          format: date
+          example: "2024-01-15"
+        dateEcheance:
+          type: string
+          format: date
+          example: "2024-02-15"
+        statut:
+          type: string
+          enum: [EN_ATTENTE, EN_RETARD, PAYEE_PARTIELLEMENT, PAYEE]
+          example: EN_ATTENTE
+    FactureInput:
+      type: object
+      required: [client, numeroFacture, montantTotal, dateEmission, dateEcheance]
+      properties:
+        client:
+          type: string
+          description: ID MongoDB du client
+          example: 64b1f2c3d4e5f6a7b8c9d0e2
+        numeroFacture:
+          type: string
+          example: FAC-2024-001
+        montantTotal:
+          type: number
+          minimum: 0
+          example: 1500.00
+        dateEmission:
+          type: string
+          format: date
+          example: "2024-01-15"
+        dateEcheance:
+          type: string
+          format: date
+          example: "2024-02-15"
+        statut:
+          type: string
+          enum: [EN_ATTENTE, EN_RETARD, PAYEE_PARTIELLEMENT, PAYEE]
+    FactureUpdate:
+      type: object
+      properties:
+        dateEcheance:
+          type: string
+          format: date
+          example: "2024-03-15"
+        statut:
+          type: string
+          enum: [EN_ATTENTE, EN_RETARD, PAYEE_PARTIELLEMENT, PAYEE]
+          example: EN_RETARD

@@ -1,0 +1,116 @@
+paths:
+  /api/factures:
+    get:
+      tags: [Factures]
+      summary: Récupérer toutes les factures
+      description: Retourne les factures avec les infos client. Requiert le rôle MANAGER ou AGENT.
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Liste des factures
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Facture' }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+    post:
+      tags: [Factures]
+      summary: Créer une facture
+      description: Requiert le rôle MANAGER ou AGENT.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FactureInput' }
+      responses:
+        201:
+          description: Facture créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  facture: { $ref: '#/components/schemas/Facture' }
+        400: { description: Données invalides }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+        404: { description: Client introuvable }
+
+  /api/factures/client/{clientId}:
+    get:
+      tags: [Factures]
+      summary: Factures d'un client
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema: { type: string }
+          description: ID MongoDB du client
+      responses:
+        200:
+          description: Liste des factures du client
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Facture' }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+
+  /api/factures/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string }
+        description: ID MongoDB de la facture
+    get:
+      tags: [Factures]
+      summary: Récupérer une facture par ID
+      security: [{ bearerAuth: [] }]
+      responses:
+        200:
+          description: Facture trouvée
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Facture' }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+        404: { description: Facture non trouvée }
+    put:
+      tags: [Factures]
+      summary: Mettre à jour une facture
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FactureUpdate' }
+      responses:
+        200:
+          description: Facture mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  facture: { $ref: '#/components/schemas/Facture' }
+        400: { description: Données invalides }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+        404: { description: Facture non trouvée }
+    delete:
+      tags: [Factures]
+      summary: Supprimer une facture
+      security: [{ bearerAuth: [] }]
+      responses:
+        200: { description: Facture supprimée }
+        401: { description: Non authentifié }
+        403: { description: Accès interdit }
+        404: { description: Facture non trouvée }
