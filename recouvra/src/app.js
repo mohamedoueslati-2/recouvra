@@ -6,7 +6,7 @@ const authRoutes = require('./routes/authRoutes');
 const utilisateurRoutes = require('./routes/utilisateurRoutes');
 const clientRoutes = require('./routes/clientRoutes');
 const factureRoutes = require('./routes/factureRoutes');
-
+const paiementRoutes = require('./routes/paiementRoutes');
 const setupSwagger = require('./config/swagger');
 
 const app = express();
@@ -22,8 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/utilisateurs', utilisateurRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/factures', factureRoutes);
-
-
+app.use('/api/paiements', paiementRoutes);
 
 // Swagger
 setupSwagger(app);
