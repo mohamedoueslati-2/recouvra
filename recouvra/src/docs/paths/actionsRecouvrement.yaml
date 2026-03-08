@@ -1,0 +1,53 @@
+paths:
+
+  /api/actions:
+    post:
+      tags: [ActionsRecouvrement]
+      summary: Créer une action de recouvrement
+      description: Permet d'ajouter une action de recouvrement pour une facture.
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActionRecouvrementInput'
+      responses:
+        201:
+          description: Action de recouvrement créée
+        400:
+          description: Données invalides
+        401:
+          description: Non authentifié
+        403:
+          description: Accès interdit
+
+
+  /api/actions/facture/{factureId}:
+    get:
+      tags: [ActionsRecouvrement]
+      summary: Suivre les actions de recouvrement d'une facture
+      description: Retourne l'historique des actions de recouvrement associées à une facture.
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: factureId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID MongoDB de la facture
+      responses:
+        200:
+          description: Liste des actions de recouvrement
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActionRecouvrement'
+        401:
+          description: Non authentifié
+        403:
+          description: Accès interdit
+        404:
+          description: Facture non trouvée

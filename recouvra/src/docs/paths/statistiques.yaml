@@ -1,0 +1,19 @@
+/api/statistiques:
+  get:
+    tags:
+      - Statistiques
+    summary: Consulter les statistiques des factures et actions de recouvrement
+    description: Permet au manager de consulter les statistiques globales des factures et actions de recouvrement.
+    security:
+      - bearerAuth: []
+    responses:
+      200:
+        description: Statistiques récupérées avec succès
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Statistiques'
+      401:
+        description: Non authentifié
+      403:
+        description: Accès interdit

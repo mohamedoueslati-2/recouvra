@@ -1,0 +1,62 @@
+components:
+  schemas:
+
+    ActionRecouvrement:
+      type: object
+      properties:
+
+        _id:
+          type: string
+          description: Identifiant unique de l'action de recouvrement
+          example: "665a123456"
+
+        facture:
+          type: string
+          description: ID de la facture associée à l'action
+          example: "665a654321"
+
+        typeAction:
+          type: string
+          description: Type d'action de recouvrement effectuée
+          enum:
+            - APPEL
+            - EMAIL
+            - COURRIER
+            - MISE_EN_DEMEURE
+          example: "EMAIL"
+
+        commentaire:
+          type: string
+          description: Commentaire ou note sur l'action de recouvrement
+          example: "Relance envoyée au client"
+
+        dateAction:
+          type: string
+          format: date-time
+          description: Date à laquelle l'action de recouvrement a été réalisée
+          example: "2026-03-08T14:30:00.000Z"
+
+
+    ActionRecouvrementInput:
+      type: object
+      required:
+        - facture
+        - typeAction
+        - commentaire
+      properties:
+
+        facture:
+          type: string
+          example: "69ad91d07083762ca281592"
+
+        typeAction:
+          type: string
+          enum:
+            - APPEL
+            - EMAIL
+            - COURRIER
+            - MISE_EN_DEMEURE
+
+        commentaire:
+          type: string
+          example: "Appel au client pour relance de paiement"
