@@ -1,0 +1,34 @@
+components:
+  schemas:
+
+    Statistiques:
+      type: object
+      properties:
+
+        totalFactures:
+          type: integer
+          example: 10
+
+        facturesEnAttente:
+          type: integer
+          example: 4
+
+        facturesEnRetard:
+          type: integer
+          example: 3
+
+        facturesPayees:
+          type: integer
+          example: 3
+
+        montantTotal:
+          type: number
+          example: 15000
+
+        montantRestant:
+          type: number
+          example: 4500
+
+        totalActions:
+          type: integer
+          example: 6

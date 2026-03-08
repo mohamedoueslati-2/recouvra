@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const factureController = require('../controllers/factureController');
+const actionRecouvrementService = require('../services/actionRecouvrementService');
 const validate = require('../middlewares/validate');
 const { verifierToken, autoriserRoles } = require('../middlewares/auth');
 
@@ -13,5 +14,21 @@ router.get('/client/:clientId', factureController.afficherFacturesParClient);
 router.get('/:id', factureController.afficherFactureParId);
 router.put('/:id', validate(factureController.schemaFactureMiseAJour), factureController.mettreAJourFacture);
 router.delete('/:id', factureController.supprimerFacture);
+// 🔹 suivre les actions de recouvrement d'une facture
+router.get('/:id/actions', async (req, res) => {
+  try {
+
+    const actions = await actionRecouvrementService.suivreActionsFacture(req.params.id);
+
+    res.json(actions);
+
+  } catch (error) {
+
+    res.status(500).json({ message: error.message });
+
+  }
+});
+
+
 
 module.exports = router;

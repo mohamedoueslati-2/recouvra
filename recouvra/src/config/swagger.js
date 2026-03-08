@@ -13,6 +13,18 @@ const options = {
     servers: [
       { url: 'http://localhost:3000', description: 'Serveur de developpement' },
     ],
+     // ⭐ ICI tu définis l'ordre
+    tags: [
+      { name: "Authentification" },
+      { name: "Clients" },
+      { name: "Factures" },
+      { name: "Paiements" },
+      { name: "ActionsRecouvrement" },
+      { name: "Utilisateurs" },
+      { name: "Statistiques" }
+      
+    ],
+
     components: {
       securitySchemes: {
         bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
