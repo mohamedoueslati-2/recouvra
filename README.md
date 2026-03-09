@@ -111,6 +111,8 @@ recouvra/
     │   ├── utilisateurRoutes.js
     │   ├── clientRoutes.js
     │   ├── factureRoutes.js
+    │   ├── actionRecouvrementRoutes.js
+    │   ├── statistiqueRoutes.js
     │   └── paiementRoutes.js
     ├── services/               # Logique métier
     │   ├── utilisateurService.js
