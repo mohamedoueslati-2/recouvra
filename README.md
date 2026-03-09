@@ -78,18 +78,24 @@ recouvra/
     │   │   ├── utilisateur.yaml
     │   │   ├── client.yaml
     │   │   ├── facture.yaml
-    │   │   └── paiement.yaml
+    │   │   ├── paiement.yaml
+    │   │   ├── statistiques.yaml
+    │   │   └── actionRecouvrement.yaml
     │   └── paths/              # Routes OpenAPI (YAML)
     │       ├── auth.yaml
     │       ├── utilisateurs.yaml
     │       ├── clients.yaml
     │       ├── factures.yaml
-    │       └── paiements.yaml
+    │       ├── paiements.yaml
+    |       ├── statistiques.yaml
+    │       └── actionsRecouvrement.yaml
     ├── controllers/            # Logique des routes (req/res)
     │   ├── authController.js
     │   ├── utilisateurController.js
+    │   ├── actionRecouvrementController.js
     │   ├── clientController.js
     │   ├── factureController.js
+    │   ├── statistiquesController.js
     │   └── paiementController.js
     ├── middlewares/
     │   ├── auth.js             # Vérification JWT + rôles
@@ -98,6 +104,7 @@ recouvra/
     │   ├── Utilisateur.js
     │   ├── Client.js
     │   ├── Facture.js
+    │   ├── ActionRecouvrement.js
     │   └── Paiement.js
     ├── routes/                 # Définition des routes
     │   ├── authRoutes.js
@@ -109,6 +116,8 @@ recouvra/
     │   ├── utilisateurService.js
     │   ├── clientService.js
     │   ├── factureService.js
+    │   ├── ActionRecouvrementService.js
+    │   ├── statistiqueService.js
     │   └── paiementService.js
     └── tests/
         └── services/           # Tests unitaires Jest
@@ -141,6 +150,9 @@ recouvra/
 | GET     | `/api/paiements`                         | MANAGER / AGENT     | Liste les paiements                |
 | POST    | `/api/paiements`                         | MANAGER / AGENT     | Enregistre un paiement             |
 | GET     | `/api/paiements/facture/:factureId`      | MANAGER / AGENT     | Paiements d'une facture            |
+| POST    | `/api/actions                            |MANAGER / AGENT      | Crée une actionRecouvrement        |
+| GET     | `/api/actions/facture/:factureId`        |MANAGER / AGENT      | liste des actionRecouvrement       |
+| GET     | `/api/statistiques                       |MANAGER              | Consulter statistiques             |
 
 ---
 
